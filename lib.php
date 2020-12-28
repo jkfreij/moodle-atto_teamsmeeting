@@ -34,13 +34,29 @@ require_once(__DIR__ . '/../../../../../repository/url/locallib.php');
  */
 function atto_teamsmeeting_params_for_js($elementid, $options, $fpoptions) {
     global $CFG, $SESSION, $USER;
-    $params = [
+	//Added by Jad to check the user role and give him the capabilities to add teams meeting
+    $context = $options['context'];
+    if (!$context) {
+        $context = context_system::instance();
+    }
+    //Added by Jad to check the user role and give him the capabilities to add teams meeting
+    $addteamsmeeting =  has_capability('atto/teamsmeeting:addteamsmeeting', $context);	
+    $allowedmethods = '';
+    if(!$addteamsmeeting){
+		$allowedmethods = 'none';
+	}
+	//*******************//
+	$params = [
+	    'allowedmethods' => $allowedmethods,
         'clientdomain' => encode_url($CFG->wwwroot),
         'appurl' => get_config('atto_teamsmeeting', 'meetingapplink'),
         'locale' => (empty($SESSION->lang) ? $USER->lang : $SESSION->lang)
     ];
+
+	
     return $params;
 }
+
 
 /**
  * Initialise this plugin
